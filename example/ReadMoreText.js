@@ -1,16 +1,38 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import PropTypes from "prop-types";
 
 export default class ReadMoreText extends Component {
+  static propTypes = {
+    ...Text.propTypes,
+    limitLines: PropTypes.number,
+    renderFoldFooter: PropTypes.oneOfType([PropTypes.func, PropTypes.element]),
+    renderSpreadFooter: PropTypes.oneOfType([PropTypes.func, PropTypes.element])
+  };
+
+  static defaultProps = {
+    limitLines: 3
+  };
+
   constructor(props) {
     super(props);
     this.state = {
-      isShowingMore: false,
+      isShowingAllContent: false,
       shouldFoldText: false
     };
     this.eachLineHeight = 0;
     this.totalHeight = 0;
   }
+
+  foldContent = () => {
+    if (!this.state.isShowingAllContent) return;
+    this.setState({ isShowingAllContent: false });
+  };
+
+  spreadContent = () => {
+    if (this.state.isShowingAllContent) return;
+    this.setState({ isShowingAllContent: true });
+  };
 
   handleEachLineTextLayout = evt => {
     const { height } = evt.nativeEvent.layout;
@@ -30,40 +52,58 @@ export default class ReadMoreText extends Component {
 
   foldTextWithLimitLinesIfNeed = () => {
     if (this.totalHeight === 0 || this.eachLineHeight === 0) return;
-    if (Math.round(this.totalHeight / this.eachLineHeight) > this.props.limitLines) {
+    if (
+      Math.round(this.totalHeight / this.eachLineHeight) > this.props.limitLines
+    ) {
       this.setState({ shouldFoldText: true });
     }
   };
 
-  handlePress = () => this.setState({ isShowingMore: !this.state.isShowingMore });
+  handlePress = () =>
+    this.setState({ isShowingAllContent: !this.state.isShowingAllContent });
+
+  componentBuilder = component => {
+    if (Object.prototype.toString.call(component) === "[object Function]") {
+      return component();
+    } else if (React.isValidElement(component)) {
+      return component;
+    }
+    return null;
+  };
+
+  renderFooter = () => {
+    const { renderFoldFooter, renderSpreadFooter } = this.props;
+    const { isShowingAllContent } = this.state;
+    return isShowingAllContent
+      ? this.componentBuilder(renderSpreadFooter)
+      : this.componentBuilder(renderFoldFooter);
+  };
 
   render() {
-    const { textStyle, children, limitLines } = this.props;
-    const { isShowingMore, shouldFoldText } = this.state;
+    const { style, children, limitLines } = this.props;
+    const { isShowingAllContent, shouldFoldText } = this.state;
 
     return (
       <View>
         <View pointerEvents="none">
           <Text
-            style={[textStyle, styles.transparentText]}
+            style={[style, styles.transparentText]}
             numberOfLines={1}
             onLayout={this.handleEachLineTextLayout}
           >
             {"1Line"}
           </Text>
           <Text
-            style={[textStyle, styles.transparentText]}
+            style={[style, styles.transparentText]}
             onLayout={this.handleAllTextLayout}
           >
             {children}
           </Text>
         </View>
-        <Text style={textStyle} numberOfLines={isShowingMore ? 0 : limitLines}>
+        <Text style={style} numberOfLines={isShowingAllContent ? 0 : limitLines}>
           {children}
         </Text>
-        {
-          shouldFoldText && <Text style={{ color: 'blue' }} onPress={this.handlePress}>More</Text>
-        }
+        {shouldFoldText && this.renderFooter()}
       </View>
     );
   }

@@ -7,5 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "cookiej",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "react-native",
+    "show-more",
+    "read-more",
+    "more-text",
+    "text"
+  ],
+  "dependencies": {
+    "prop-types": "^15.6.2"
+  }
 }

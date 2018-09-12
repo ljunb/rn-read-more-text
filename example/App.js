@@ -8,7 +8,7 @@
 
 import React, { Component } from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
-import ReadMoreText from "rn-read-more-text";
+import ReadMoreText from "./ReadMoreText";
 
 const instructions = Platform.select({
   ios: "Press Cmd+R to reload,\n" + "Cmd+D or shake for dev menu",
@@ -19,6 +19,9 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+
+  renderSpreadFooter = () => <Text onPress={() => this.readMoreText.foldContent()}>Hide More</Text>;
+
   render() {
     return (
       <View style={styles.container}>
@@ -26,10 +29,19 @@ export default class App extends Component<Props> {
         <Text style={styles.instructions}>To get started, edit App.js</Text>
         <Text style={styles.instructions}>{instructions}</Text>
         <View style={{ backgroundColor: "lightgray" }}>
-          <ReadMoreText limitLines={2}>{instructions.repeat(3)}</ReadMoreText>
+          <ReadMoreText
+            ref={r => (this.readMoreText = r)}
+            limitLines={2}
+            renderFoldFooter={<Text onPress={() => this.readMoreText.spreadContent()}>Show More</Text>}
+            renderSpreadFooter={this.renderSpreadFooter}
+          >
+            {instructions.repeat(3)}
+          </ReadMoreText>
         </View>
         <View style={{ backgroundColor: "lightgray", marginTop: 10 }}>
-          <ReadMoreText limitLines={1}>This is only 1 line, needn't fold text</ReadMoreText>
+          <ReadMoreText limitLines={1}>
+            This is only 1 line, needn't fold text
+          </ReadMoreText>
         </View>
       </View>
     );
