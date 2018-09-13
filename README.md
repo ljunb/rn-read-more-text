@@ -7,7 +7,7 @@
 
 这是一个支持设置行数的可折叠文本组件，具备以下功能：
  * 与 `Text` 组件使用方式一致，只是多了两个参数 `limitLines` 和 `renderFooter`
- * 如当前文本内容所显示的行数，与最大行数一致，则不显示控制折叠的 `footer` 组件
+ * 如当前文本内容所显示的行数，与最大行数一致，则不显示控制折叠的 `footer` 组件
  * `renderFooter` 基于 `render props` 方式实现，自定义样式和事件响应更自由方便
 
  ## 安装
@@ -96,8 +96,7 @@ export default class App extends Component {
           }}
         >
           <ReadMoreText limitLines={1} renderFooter={this.render2ndFooter}>
-            This is one line, needn't show footer (limitLines=
-            {1})
+            This is one line, needn't show footer (limitLines={1})
           </ReadMoreText>
         </View>
       </View>
@@ -107,10 +106,10 @@ export default class App extends Component {
 ```
 
 ## 参数说明
-名称             | 类型    | 默认值     | 描述
----------------- | ----------- | -----------  | -----------
-limitLines    |  数字 | 3 | 表示最大显示行数
-renderFooter | 函数 | 无 | 用于渲染文本展开，或是折叠时不同的底部组件，其回调参数为：`({ isShowingAll, fold, spread }) => React.Element<any>`。<br/>`isShowingAll: boolean`，代表文本实时状态，用于渲染不同状态组件<br/>`fold: func`，调用后折叠文本<br/>`spread: func`，调用后展开文本
+名称             |类型    |默认值     |描述
+---------------- | ---------------- | ----------------  | ----------------
+limitLines    |数字 | 3 | 表示最大显示行数
+renderFooter |函数 | 无 | 用于渲染文本展开，或是折叠时不同的底部组件，其回调参数为：`({ isShowingAll, fold, spread }) => React.Element<any>`。<br/>`isShowingAll` : `boolean`，代表文本实时状态，用于渲染不同状态组件<br/>`fold` : `func`，调用后折叠文本<br/>`spread` : `func`，调用后展开文本
 
 ## 其他
 若需要手动控制折叠和展开状态，可通过 `ref` 引用来实现。如上述示例中的 `this.textRef.spread()`。
