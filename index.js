@@ -1,37 +1,43 @@
+/* @flow */
 import React, { Component } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
 
-export default class ReadMoreText extends Component {
-  static propTypes = {
-    ...Text.propTypes,
-    limitLines: PropTypes.number,
-    renderFoldFooter: PropTypes.oneOfType([PropTypes.func, PropTypes.element]),
-    renderSpreadFooter: PropTypes.oneOfType([PropTypes.func, PropTypes.element])
-  };
+type RenderProps = {
+  isShowingAll: boolean,
+  fold: () => void,
+  spread: () => void
+}
 
+type ReadMoreProps = {
+  limitLines?: number,
+  renderFooter?: (props: RenderProps) => React.Element<any>
+}
+
+type ReadMoreState = {
+  isShowingAll: boolean,
+  shouldFoldText: boolean
+}
+
+export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState> {
   static defaultProps = {
     limitLines: 3
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      isShowingAllContent: false,
-      shouldFoldText: false
-    };
-    this.eachLineHeight = 0;
-    this.totalHeight = 0;
-  }
+  state: ReadMoreState = {
+    isShowingAll: false,
+    shouldFoldText: false
+  };
+  eachLineHeight: number = 0;
+  totalHeight: number = 0;
 
-  foldContent = () => {
-    if (!this.state.isShowingAllContent) return;
-    this.setState({ isShowingAllContent: false });
+  fold = () => {
+    if (!this.state.isShowingAll) return;
+    this.setState({ isShowingAll: false });
   };
 
-  spreadContent = () => {
-    if (this.state.isShowingAllContent) return;
-    this.setState({ isShowingAllContent: true });
+  spread = () => {
+    if (this.state.isShowingAll) return;
+    this.setState({ isShowingAll: true });
   };
 
   handleEachLineTextLayout = evt => {
@@ -60,28 +66,25 @@ export default class ReadMoreText extends Component {
   };
 
   handlePress = () =>
-    this.setState({ isShowingAllContent: !this.state.isShowingAllContent });
+    this.setState({ isShowingAll: !this.state.isShowingAll });
 
-  componentBuilder = component => {
-    if (Object.prototype.toString.call(component) === "[object Function]") {
-      return component();
-    } else if (React.isValidElement(component)) {
-      return component;
+  renderFooter = () => {
+    const { renderFooter } = this.props;
+    const { isShowingAll } = this.state;
+    const props: RenderProps = {
+      isShowingAll,
+      fold: this.fold,
+      spread: this.spread,
+    };
+    if (renderFooter) {
+      return renderFooter(props);
     }
     return null;
   };
 
-  renderFooter = () => {
-    const { renderFoldFooter, renderSpreadFooter } = this.props;
-    const { isShowingAllContent } = this.state;
-    return isShowingAllContent
-      ? this.componentBuilder(renderSpreadFooter)
-      : this.componentBuilder(renderFoldFooter);
-  };
-
   render() {
     const { style, children, limitLines } = this.props;
-    const { isShowingAllContent, shouldFoldText } = this.state;
+    const { isShowingAll, shouldFoldText } = this.state;
 
     return (
       <View>
@@ -100,7 +103,10 @@ export default class ReadMoreText extends Component {
             {children}
           </Text>
         </View>
-        <Text style={style} numberOfLines={isShowingAllContent ? 0 : limitLines}>
+        <Text
+          style={style}
+          numberOfLines={isShowingAll ? 0 : limitLines}
+        >
           {children}
         </Text>
         {shouldFoldText && this.renderFooter()}

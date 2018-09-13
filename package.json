@@ -1,6 +1,6 @@
 {
   "name": "rn-read-more-text",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "支持查看更多的折叠文本组件",
   "main": "index.js",
   "scripts": {
@@ -14,8 +14,5 @@
     "read-more",
     "more-text",
     "text"
-  ],
-  "dependencies": {
-    "prop-types": "^15.6.2"
-  }
+  ]
 }

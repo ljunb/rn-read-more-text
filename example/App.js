@@ -7,40 +7,80 @@
  */
 
 import React, { Component } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
-import ReadMoreText from "./ReadMoreText";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import ReadMoreText from "rn-read-more-text";
 
-const instructions = Platform.select({
-  ios: "Press Cmd+R to reload,\n" + "Cmd+D or shake for dev menu",
-  android:
-    "Double tap R on your keyboard to reload,\n" +
-    "Shake or press menu button for dev menu"
-});
+export default class App extends Component {
+  content = `    It is a nice evening. There is a curve moon in the sky. Those shining stars hang in the sky. They are winking and seem to be saying some things.
+    The girl is doing her homework. So she is very tired. After a while, she says :“Oh, I have already finished my homework. l can go to bed now!” She goes into the bathroom and does some washing. And then she goes to bed. She is sleeping well. A nice sweet dream falls on her. Her pet Mimi also has a dream with her.
+    They dream about visiting the space. The spaceship takes them to the moon……
+    How wonderful the night and the dream are!
+`;
 
-type Props = {};
-export default class App extends Component<Props> {
+  render1stFooter = ({ isShowingAll, fold, spread }) => (
+    <View
+      style={{
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        backgroundColor: "#fff"
+      }}
+    >
+      <Text onPress={() => (isShowingAll ? fold() : spread())}>
+        {isShowingAll ? "Show less" : "Show more"}
+      </Text>
+    </View>
+  );
 
-  renderSpreadFooter = () => <Text onPress={() => this.readMoreText.foldContent()}>Hide More</Text>;
+  render2ndFooter = ({ isShowingAll, fold, spread }) => (
+    <Text
+      style={{ color: "blue", alignSelf: "flex-end" }}
+      onPress={() => (isShowingAll ? fold() : spread())}
+    >
+      {isShowingAll ? "Show less" : "Show more"}
+    </Text>
+  );
+
+  handleManualToggle = () => this.textRef && this.textRef.spread();
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <View style={{ backgroundColor: "lightgray" }}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={{ backgroundColor: "rgba(1,1,1,0.1)", padding: 10 }}
+          onPress={this.handleManualToggle}
+        >
           <ReadMoreText
-            ref={r => (this.readMoreText = r)}
+            ref={r => (this.textRef = r)}
+            style={{ color: "red", fontSize: 16 }}
             limitLines={2}
-            renderFoldFooter={<Text onPress={() => this.readMoreText.spreadContent()}>Show More</Text>}
-            renderSpreadFooter={this.renderSpreadFooter}
+            renderFooter={this.render1stFooter}
           >
-            {instructions.repeat(3)}
+            {this.content}
+          </ReadMoreText>
+        </TouchableOpacity>
+        <View
+          style={{
+            backgroundColor: "rgba(1,1,1,0.1)",
+            marginTop: 10,
+            padding: 10
+          }}
+        >
+          <ReadMoreText limitLines={5} renderFooter={this.render2ndFooter}>
+            {this.content}
           </ReadMoreText>
         </View>
-        <View style={{ backgroundColor: "lightgray", marginTop: 10 }}>
-          <ReadMoreText limitLines={1}>
-            This is only 1 line, needn't fold text
+        <View
+          style={{
+            backgroundColor: "rgba(1,1,1,0.1)",
+            marginTop: 10,
+            padding: 10
+          }}
+        >
+          <ReadMoreText limitLines={1} renderFooter={this.render2ndFooter}>
+            This is one line, needn't show footer (limitLines=
+            {1})
           </ReadMoreText>
         </View>
       </View>
