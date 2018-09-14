@@ -17,31 +17,31 @@ export default class App extends Component {
     How wonderful the night and the dream are!
 `;
 
-  render1stFooter = ({ isShowingAll, fold, spread }) => (
+  render1stFooter = ({ isShowingAll, toggle }) => (
     <View
       style={{
         position: "absolute",
-        bottom: 0,
+        bottom: 10,
         right: 0,
         backgroundColor: "#fff"
       }}
     >
-      <Text onPress={() => (isShowingAll ? fold() : spread())}>
+      <Text onPress={() => toggle()}>
         {isShowingAll ? "Show less" : "Show more"}
       </Text>
     </View>
   );
 
-  render2ndFooter = ({ isShowingAll, fold, spread }) => (
+  render2ndFooter = ({ isShowingAll, toggle }) => (
     <Text
       style={{ color: "blue", alignSelf: "flex-end" }}
-      onPress={() => (isShowingAll ? fold() : spread())}
+      onPress={() => toggle()}
     >
       {isShowingAll ? "Show less" : "Show more"}
     </Text>
   );
 
-  handleManualToggle = () => this.textRef && this.textRef.spread();
+  handleManualToggle = () => this.textRef && this.textRef.toggle();
 
   render() {
     return (
@@ -53,11 +53,12 @@ export default class App extends Component {
         >
           <ReadMoreText
             ref={r => (this.textRef = r)}
-            style={{ color: "red", fontSize: 16 }}
-            limitLines={2}
+            style={{ color: "red", fontSize: 16, lineHeight: 40 }}
+            limitLines={3}
             renderFooter={this.render1stFooter}
+            onToggleFinish={({ isShowingAll }) => alert(`isShowingAll: ${isShowingAll}`)}
           >
-            {this.content}
+            {`limitLines = 3: ${this.content}`}
           </ReadMoreText>
         </TouchableOpacity>
         <View
@@ -68,7 +69,7 @@ export default class App extends Component {
           }}
         >
           <ReadMoreText limitLines={5} renderFooter={this.render2ndFooter}>
-            {this.content}
+            {`limitLines = 5: ${this.content}`}
           </ReadMoreText>
         </View>
         <View
@@ -79,8 +80,7 @@ export default class App extends Component {
           }}
         >
           <ReadMoreText limitLines={1} renderFooter={this.render2ndFooter}>
-            This is one line, needn't show footer (limitLines=
-            {1})
+            limitLines = 1: This is one line, needn't show footer
           </ReadMoreText>
         </View>
       </View>

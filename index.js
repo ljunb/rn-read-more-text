@@ -2,23 +2,27 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
+type ToggleFinishResult = {
+  isShowingAll: boolean
+};
+
 type RenderProps = {
   isShowingAll: boolean,
-  fold: () => void,
-  spread: () => void
-}
+  toggle: () => void
+};
 
 type ReadMoreProps = {
   limitLines?: number,
-  renderFooter?: (props: RenderProps) => React.Element<any>
-}
+  renderFooter?: (props: RenderProps) => React.Element<any>,
+  onToggleFinish: (result: ToggleFinishResult) => void
+};
 
 type ReadMoreState = {
   isShowingAll: boolean,
   shouldFoldText: boolean
-}
+};
 
-export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState> {
+export default class ReadMoreText extends Component<ReadMoreProps,ReadMoreState> {
   static defaultProps = {
     limitLines: 3
   };
@@ -30,15 +34,15 @@ export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState
   eachLineHeight: number = 0;
   totalHeight: number = 0;
 
-  fold = () => {
-    if (!this.state.isShowingAll) return;
-    this.setState({ isShowingAll: false });
-  };
+  toggle = () =>
+    this.setState(
+      preState => ({ isShowingAll: !preState.isShowingAll }),
+      this.handleToggleFinish
+    );
 
-  spread = () => {
-    if (this.state.isShowingAll) return;
-    this.setState({ isShowingAll: true });
-  };
+  handleToggleFinish = () =>
+    this.props.onToggleFinish &&
+    this.props.onToggleFinish({ isShowingAll: this.state.isShowingAll });
 
   handleEachLineTextLayout = evt => {
     const { height } = evt.nativeEvent.layout;
@@ -65,16 +69,14 @@ export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState
     }
   };
 
-  handlePress = () =>
-    this.setState({ isShowingAll: !this.state.isShowingAll });
+  handlePress = () => this.setState({ isShowingAll: !this.state.isShowingAll });
 
   renderFooter = () => {
     const { renderFooter } = this.props;
     const { isShowingAll } = this.state;
     const props: RenderProps = {
       isShowingAll,
-      fold: this.fold,
-      spread: this.spread,
+      toggle: this.toggle
     };
     if (renderFooter) {
       return renderFooter(props);
@@ -83,13 +85,14 @@ export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState
   };
 
   render() {
-    const { style, children, limitLines } = this.props;
+    const { style, children, limitLines, ...restProps } = this.props;
     const { isShowingAll, shouldFoldText } = this.state;
 
     return (
       <View>
         <View pointerEvents="none">
           <Text
+            {...restProps}
             style={[style, styles.transparentText]}
             numberOfLines={1}
             onLayout={this.handleEachLineTextLayout}
@@ -97,6 +100,7 @@ export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState
             {"1Line"}
           </Text>
           <Text
+            {...restProps}
             style={[style, styles.transparentText]}
             onLayout={this.handleAllTextLayout}
           >
@@ -104,6 +108,7 @@ export default class ReadMoreText extends Component<ReadMoreProps, ReadMoreState
           </Text>
         </View>
         <Text
+          {...restProps}
           style={style}
           numberOfLines={isShowingAll ? 0 : limitLines}
         >
