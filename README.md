@@ -91,7 +91,3 @@ renderFooter = ({ isShowingAll, toggle }) => <View />
 limitLines|数字|3|表示最大显示行数
 renderFooter|函数|无|用于渲染文本展开，或是折叠时不同的底部组件，其回调参数为：`({ isShowingAll, toggle }) => React.Element<any>`。<br/><br/>`isShowingAll` : `boolean`，代表文本实时状态，用于渲染不同状态组件<br/>`toggle` : `func`，调用后折叠/展开文本
 onToggleFinish|函数|无|组件状态修改后的回调，将返回对象，格式如：`onToggleFinish: ({ isShowingAll }) => void`
-
-## TODO
-* 当前每行高度的计算基于字符串： `1Line` ，汉字下的计算待测试验证准确度
-* 待补充列表测试的示例
